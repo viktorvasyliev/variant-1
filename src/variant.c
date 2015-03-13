@@ -43,6 +43,10 @@ typedef struct VariantCache
 
 #define GetCache(fcinfo) ((VariantCache *) fcinfo->flinfo->fn_extra)
 
+#ifdef WIN32
+typedef unsigned int uint;
+#endif
+
 static Variant variant_in_int(FunctionCallInfo fcinfo, char *input, int variant_typmod);
 static char * variant_out_int(FunctionCallInfo fcinfo, Variant input);
 static int variant_cmp_int(FunctionCallInfo fcinfo);
@@ -81,6 +85,9 @@ PG_FUNCTION_INFO_V1(variant_in);
 /* This ugly prototyping is because prior to 9.4 PG_FUNCTION_INFO_V1 doesn't
  * include a prototype definition.
  */
+#ifdef WIN32
+PGDLLEXPORT
+#endif
 Datum
 variant_in(PG_FUNCTION_ARGS);
 Datum
@@ -102,6 +109,9 @@ variant_in(PG_FUNCTION_ARGS)
  * 	Variant
  */
 PG_FUNCTION_INFO_V1(variant_cast_in);
+#ifdef WIN32
+PGDLLEXPORT
+#endif
 Datum
 variant_cast_in(PG_FUNCTION_ARGS);
 Datum
@@ -131,6 +141,9 @@ variant_cast_in(PG_FUNCTION_ARGS)
 }
 
 PG_FUNCTION_INFO_V1(variant_out);
+#ifdef WIN32
+PGDLLEXPORT
+#endif
 Datum
 variant_out(PG_FUNCTION_ARGS);
 Datum
@@ -147,6 +160,9 @@ variant_out(PG_FUNCTION_ARGS)
  * defined for each type, but they all just call this C function.
  */
 PG_FUNCTION_INFO_V1(variant_cast_out);
+#ifdef WIN32
+PGDLLEXPORT
+#endif
 Datum
 variant_cast_out(PG_FUNCTION_ARGS);
 Datum
@@ -209,6 +225,9 @@ variant_cast_out(PG_FUNCTION_ARGS)
 }
 
 PG_FUNCTION_INFO_V1(variant_typmod_in);
+#ifdef WIN32
+PGDLLEXPORT
+#endif
 Datum
 variant_typmod_in(PG_FUNCTION_ARGS);
 Datum
@@ -283,6 +302,9 @@ variant_typmod_in(PG_FUNCTION_ARGS)
 }
 
 PG_FUNCTION_INFO_V1(variant_typmod_out);
+#ifdef WIN32
+PGDLLEXPORT
+#endif
 Datum
 variant_typmod_out(PG_FUNCTION_ARGS);
 Datum
@@ -301,6 +323,9 @@ variant_typmod_out(PG_FUNCTION_ARGS)
 	PG_RETURN_CSTRING(out->data);
 }
 PG_FUNCTION_INFO_V1(quote_variant_name);
+#ifdef WIN32
+PGDLLEXPORT
+#endif
 Datum
 quote_variant_name(PG_FUNCTION_ARGS);
 Datum
@@ -325,6 +350,9 @@ quote_variant_name(PG_FUNCTION_ARGS)
  * text_(in|out): Same as variant_(in|out) except text instead of cstring
  */
 PG_FUNCTION_INFO_V1(variant_text_in);
+#ifdef WIN32
+PGDLLEXPORT
+#endif
 Datum
 variant_text_in(PG_FUNCTION_ARGS);
 Datum
@@ -342,6 +370,9 @@ variant_text_in(PG_FUNCTION_ARGS)
 	);
 }
 PG_FUNCTION_INFO_V1(variant_text_out);
+#ifdef WIN32
+PGDLLEXPORT
+#endif
 Datum
 variant_text_out(PG_FUNCTION_ARGS);
 Datum
@@ -351,6 +382,9 @@ variant_text_out(PG_FUNCTION_ARGS)
 }
 
 PG_FUNCTION_INFO_V1(variant_type_out);
+#ifdef WIN32
+PGDLLEXPORT
+#endif
 Datum
 variant_type_out(PG_FUNCTION_ARGS);
 Datum
@@ -369,6 +403,9 @@ variant_type_out(PG_FUNCTION_ARGS)
  * COMPARISON FUNCTIONS
  */
 PG_FUNCTION_INFO_V1(variant_cmp);
+#ifdef WIN32
+PGDLLEXPORT
+#endif
 Datum
 variant_cmp(PG_FUNCTION_ARGS);
 Datum
@@ -378,6 +415,9 @@ variant_cmp(PG_FUNCTION_ARGS)
 }
 
 PG_FUNCTION_INFO_V1(variant_lt);
+#ifdef WIN32
+PGDLLEXPORT
+#endif
 Datum
 variant_lt(PG_FUNCTION_ARGS);
 Datum
@@ -391,6 +431,9 @@ variant_lt(PG_FUNCTION_ARGS)
 	PG_RETURN_BOOL(ret < 0);
 }
 PG_FUNCTION_INFO_V1(variant_le);
+#ifdef WIN32
+PGDLLEXPORT
+#endif
 Datum
 variant_le(PG_FUNCTION_ARGS);
 Datum
@@ -405,6 +448,9 @@ variant_le(PG_FUNCTION_ARGS)
 }
 
 PG_FUNCTION_INFO_V1(variant_eq);
+#ifdef WIN32
+PGDLLEXPORT
+#endif
 Datum
 variant_eq(PG_FUNCTION_ARGS);
 Datum
@@ -418,6 +464,9 @@ variant_eq(PG_FUNCTION_ARGS)
 	PG_RETURN_BOOL(ret == 0);
 }
 PG_FUNCTION_INFO_V1(variant_ne);
+#ifdef WIN32
+PGDLLEXPORT
+#endif
 Datum
 variant_ne(PG_FUNCTION_ARGS);
 Datum
@@ -432,6 +481,9 @@ variant_ne(PG_FUNCTION_ARGS)
 }
 
 PG_FUNCTION_INFO_V1(variant_ge);
+#ifdef WIN32
+PGDLLEXPORT
+#endif
 Datum
 variant_ge(PG_FUNCTION_ARGS);
 Datum
@@ -445,6 +497,9 @@ variant_ge(PG_FUNCTION_ARGS)
 	PG_RETURN_BOOL(ret >= 0);
 }
 PG_FUNCTION_INFO_V1(variant_gt);
+#ifdef WIN32
+PGDLLEXPORT
+#endif
 Datum
 variant_gt(PG_FUNCTION_ARGS);
 Datum
@@ -465,6 +520,9 @@ variant_gt(PG_FUNCTION_ARGS)
  * everything.
  */
 PG_FUNCTION_INFO_V1(variant_image_eq);
+#ifdef WIN32
+PGDLLEXPORT
+#endif
 Datum
 variant_image_eq(PG_FUNCTION_ARGS);
 Datum
@@ -1239,6 +1297,7 @@ get_call_expr_argtypmod(Node *expr, int argnum)
 
 	if (expr == NULL)
 		return -1;
+	args = NULL;
 
 	if (IsA(expr, FuncExpr))
 		args = ((FuncExpr *) expr)->args;
