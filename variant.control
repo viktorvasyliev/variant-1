@@ -1,4 +1,5 @@
 # variant extension
 comment = 'Variant data type for PostgreSQL'
 default_version = '1.0.0-beta3'
+module_pathname = '$libdir/variant'
 relocatable = false
